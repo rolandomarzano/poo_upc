@@ -17,7 +17,7 @@ class Sistema
       puts "1. Registrar Cliente"
       puts "2. Registrar Equipo"
       puts "3. Registrar Servicio"
-      puts "4. Búsqueda"
+      puts "4. Búsquedas"
       puts "5. Reportes"
       puts "6. Salir"
       puts
@@ -363,14 +363,10 @@ class Sistema
     end
   end
 
-  def mostrarClientes()
+  def busquedas()
   end
 
-  def busqueda()
-  end
-
-  def 
-    
+  def reportes()
   end
 
 end
