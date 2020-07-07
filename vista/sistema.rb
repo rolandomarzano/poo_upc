@@ -11,7 +11,6 @@ class Sistema
     begin
       system('cls')
       puts
-      puts
       puts "********** NOMBRE DE LA EMPRESA SAC. **********"
       puts
       puts "1. Registrar Cliente"
@@ -33,7 +32,7 @@ class Sistema
       when 3
         registrarServicio()
       when 4
-        busqueda()
+        busquedas()
       when 5
         reportes()
     end
@@ -42,11 +41,12 @@ class Sistema
   def validarRegistro(array, key, valor)
     if array.length > 0
       array.each do |item|
-        return item.send(key) === valor ? true : false
+        return item.send(key) === valor ? item : false
       end
     end
   end
 
+  # Registros
   def registrarCliente()
     system('cls')
     puts
@@ -57,7 +57,7 @@ class Sistema
     puts "Ingresar nombre: "
     nombre = gets.chomp
     puts "Ingresar apellidos: "
-    apellidos = gets.chomp.to_i
+    apellidos = gets.chomp
     puts "Ingresar teléfono: "
     telefono = gets.chomp.to_i
 
@@ -117,11 +117,13 @@ class Sistema
     puts "Ingresar marca: "
     marca = gets.chomp
     puts "Ingresar modelo: "
-    modelo = gets.chomp.to_i
+    modelo = gets.chomp
     puts "Ingresar número de serie: "
-    serie = gets.chomp.to_i
+    serie = gets.chomp
     puts "Ingresar accesorios: "
-    accesorios = gets.chomp.to_i
+    accesorios = gets.chomp
+
+    # MEJORAR ESTO
 
     # Validamos si el cliente existe
     cliente_existe = validarRegistro(@listaClientes, 'dni', dni_cliente)
@@ -158,9 +160,9 @@ class Sistema
     puts "Ingresar marca: "
     marca = gets.chomp
     puts "Ingresar modelo: "
-    modelo = gets.chomp.to_i
+    modelo = gets.chomp
     puts "Ingresar número de serie: "
-    serie = gets.chomp.to_i
+    serie = gets.chomp
     puts "Ingresar pulgada: "
     pulgada = gets.chomp.to_i
 
@@ -179,7 +181,7 @@ class Sistema
       system('pause')
       registrarEquipo() 
     else
-      laptop = Factory.registarLaptop(dni_cliente, marca, modelo, serie, pulgada)
+      laptop = Factory.registrarLaptop(dni_cliente, marca, modelo, serie, pulgada)
       @listaEquipos.push(laptop)
       puts
       puts "Laptop registrada correctamente"
@@ -198,11 +200,11 @@ class Sistema
     puts "Ingresar marca: "
     marca = gets.chomp
     puts "Ingresar modelo: "
-    modelo = gets.chomp.to_i
+    modelo = gets.chomp
     puts "Ingresar número de serie: "
-    serie = gets.chomp.to_i
+    serie = gets.chomp
     puts "Ingresar tipo: "
-    tipo = gets.chomp.to_i
+    tipo = gets.chomp
     puts "Ingrasar nivel de tinta: "
     nivel_tinta = gets.chomp.to_i
 
@@ -363,7 +365,80 @@ class Sistema
     end
   end
 
+  # Búsquedas
   def busquedas()
+    begin
+      system('cls')
+      puts
+      puts "********** Búsquedas **********"
+      puts
+      puts "1. Buscar Cliente"
+      puts "2. Buscar Equipo"
+      puts "3. Buscar Servicio"
+      puts "4. <- Regresar"
+      puts
+      puts "Seleccione una opción: "
+      opcion = gets.chomp.to_i
+    end until(opcion >= 1 and opcion <= 4)
+
+    case opcion
+      when 1
+        buscarCliente()
+      when 2
+        buscarEquipo()
+      when 3
+        buscarServicio()
+      when 4
+        menuPrincipal()
+    end
+  end
+
+  def buscarCliente()
+    system('cls')
+    puts
+    puts "********** Buscar Cliente **********"
+    puts
+    puts "Ingresar DNI del cliente: "
+    dni_cliente = gets.chomp
+
+    # Validamos si el cliente existe
+    cliente_existe = validarRegistro(@listaClientes, 'dni', dni_cliente)
+
+    if cliente_existe
+      cliente_existe.mostrarDatos()
+      system('pause')
+      busquedas()
+    else
+      puts "El cliente con DNI: #{dni_cliente} no existe."
+      system('pause')
+      busquedas()
+    end
+
+  end
+
+  def buscarEquipo()
+    system('cls')
+    puts
+    puts "********** Buscar Equipo **********"
+    puts
+    puts "Ingresar nro. de serie del equipo: "
+    serie_equipo = gets.chomp
+
+    # Validamos si el equipo ya fue registrado
+    equipo_existe = validarRegistro(@listaEquipos, 'serie', serie_equipo)
+
+    if equipo_existe
+      equipo_existe.mostrarDatos()
+      system('pause')
+      busquedas()
+    else
+      puts "El equipo con nro de serie: #{serie_equipo} no existe."
+      system('pause')
+      busquedas()
+    end
+  end
+
+  def buscarServicio()
   end
 
   def reportes()
