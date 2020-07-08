@@ -13,7 +13,7 @@ class Sistema
     begin
       system('cls')
       puts
-      puts "********** NOMBRE DE LA EMPRESA SAC. **********"
+      puts "********** ESTUDIOS J13 E.I.R.L. **********"
       puts
       puts "1. Registrar Cliente"
       puts "2. Registrar Equipo"
