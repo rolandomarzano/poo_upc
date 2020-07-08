@@ -41,11 +41,15 @@ class Sistema
   end
 
   def validarRegistro(array, key, valor)
+    objeto = false
     if array.length > 0
       array.each do |item|
-        return item.send(key) === valor ? item : false
+        if item.send(key) === valor
+          objeto = item
+        end
       end
     end
+    return objeto
   end
 
   def validarRegistroInstancia(array, key, valor, instancia)
@@ -54,12 +58,6 @@ class Sistema
         array.instance_of? instancia
         return item.send(key) === valor ? item : false
       end
-    end
-  end
-
-  def validarServicio(array, key, valor)
-    array.each do |item|
-      return item.send(key) === valor ? item : false
     end
   end
 
@@ -242,8 +240,16 @@ class Sistema
     end
 
     puts "Ingresar tipo: "
-    tipo = gets.chomp
+    puts "1. (Cartucho) / 2. (Contínuo)"
+    opcion = gets.chomp
+    if opcion === 1
+      tipo = "Cartucho"
+    else
+      tipo = "Continuo"      
+    end
+
     puts "Ingrasar nivel de tinta: "
+    puts "1. (Bajo) / 2. (Medio) / 3. (Alto)"
     nivel_tinta = gets.chomp.to_i
 
     laptop = Factory.registrarImpresora(dni_cliente, marca, modelo, serie, tipo, nivel_tinta)
@@ -313,7 +319,7 @@ class Sistema
     # Validamos si el equipo ya se encuentra en Reparación
     equipo_reparacion = validarRegistroInstancia(@listaServicios, 'serie_equipo', serie_equipo, Reparacion)
     if equipo_reparacion
-      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio de Reparación."
+      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio."
       system('pause')
       registrarServicio()
     end
@@ -386,7 +392,7 @@ class Sistema
     # Validamos si el equipo ya se encuentra en Mantenimiento
     equipo_mantenimiento = validarRegistroInstancia(@listaServicios, 'serie_equipo', serie_equipo, Mantenimiento)
     if equipo_mantenimiento
-      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio de Mantenimiento."
+      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio."
       system('pause')
       registrarServicio()
     end
@@ -459,7 +465,7 @@ class Sistema
     # Validamos si el equipo ya se encuentra en Instalación
     equipo_instalacion = validarRegistroInstancia(@listaServicios, 'serie_equipo', serie_equipo, Instalacion)
     if equipo_instalacion
-      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio de Instalación."
+      puts "El equipo con nro. de serie: #{serie_equipo} ya se encuentra en servicio."
       system('pause')
       registrarServicio()
     end
@@ -624,19 +630,372 @@ class Sistema
 
   end
 
+  # Reportes
   def reportes()
+    begin
+      system('cls')
+      puts
+      puts "********** Reportes **********"
+      puts
+      puts "1. Lista de Clientes"
+      puts "2. Lista de Equipos"
+      puts "3. Lista de Servicios"
+      puts "4. Ganancias"
+      puts "5. <- Regresar"
+      puts
+      puts "Seleccione una opción: "
+      opcion = gets.chomp.to_i
+    end until(opcion >= 1 and opcion <= 5)
+
+    case opcion
+      when 1
+        listaClientes()
+      when 2
+        listaEquipos()
+      when 3
+        listaServicios()
+      when 4
+        ganancias()
+      when 5
+        menuPrincipal()
+    end
+  end
+  
+  def listaClientes()
+    if @listaClientes.length > 0
+      puts
+      puts "********** Clientes **********"
+      puts
+      print "DNI".ljust(10)
+      print "Nombre".ljust(15)
+      print "Apellidos".ljust(20)
+      print "Teléfono".ljust(10)
+      print "\n"
+      puts "-------------------------------------------------------"
+      @listaClientes.each do |cliente|
+        print "#{cliente.dni}".ljust(10)
+        print "#{cliente.nombre}".ljust(15)
+        print "#{cliente.apellidos}".ljust(20)
+        print "#{cliente.telefono}".ljust(10)
+        puts
+      end
+    else
+      puts "No existen clientes registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaEquipos()
+    begin
+      system('cls')
+      puts
+      puts "********** Equipos **********"
+      puts
+      puts "1. Lista de Computadoras"
+      puts "2. Lista de Laptops"
+      puts "3. Lista de Impresoras"
+      puts "4. <- Regresar"
+      puts
+      puts "Seleccione una opción: "
+      opcion = gets.chomp.to_i
+    end until(opcion >= 1 and opcion <= 4)
+
+    case opcion
+      when 1
+        listaComputadoras()
+      when 2
+        listaLaptops()
+      when 3
+        listaImpresoras()
+      when 4
+        reportes()
+    end
+
+  end
+
+  def listaComputadoras()
+    if @listaEquipos.length > 0
+      puts
+      puts "********** Computadoras **********"
+      puts
+      print "DNI cliente".ljust(15)
+      print "Marca".ljust(15)
+      print "Modelo".ljust(15)
+      print "Serie".ljust(15)
+      print "Accesorios".ljust(15)
+      print "\n"
+      puts "---------------------------------------------------------------------------"
+      @listaEquipos.each do |equipo|
+        if equipo.instance_of? Computadora
+          print "#{equipo.dni_cliente}".ljust(15)
+          print "#{equipo.marca}".ljust(15)
+          print "#{equipo.modelo}".ljust(15)
+          print "#{equipo.serie}".ljust(15)
+          print "#{equipo.accesorios}".ljust(15)
+          puts
+        end
+      end
+    else
+      puts "No existen equipos registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaLaptops()
+    if @listaEquipos.length > 0
+      puts
+      puts "********** Laptops **********"
+      puts
+      print "DNI cliente".ljust(15)
+      print "Marca".ljust(15)
+      print "Modelo".ljust(15)
+      print "Serie".ljust(15)
+      print "Pulgada".ljust(15)
+      print "\n"
+      puts "---------------------------------------------------------------------------"
+      @listaEquipos.each do |equipo|
+        if equipo.instance_of? Laptop
+          print "#{equipo.dni_cliente}".ljust(15)
+          print "#{equipo.marca}".ljust(15)
+          print "#{equipo.modelo}".ljust(15)
+          print "#{equipo.serie}".ljust(15)
+          print "#{equipo.pulgada}".ljust(15)
+          puts
+        end
+      end
+    else
+      puts "No existen equipos registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaImpresoras()
+    if @listaEquipos.length > 0
+      puts
+      puts "********** Laptops **********"
+      puts
+      print "DNI cliente".ljust(15)
+      print "Marca".ljust(15)
+      print "Modelo".ljust(15)
+      print "Serie".ljust(15)
+      print "Tipo".ljust(15)
+      print "Nivel de tinta".ljust(15)
+      print "\n"
+      puts "------------------------------------------------------------------------------------------"
+      @listaEquipos.each do |equipo|
+        if equipo.instance_of? Impresora
+          print "#{equipo.dni_cliente}".ljust(15)
+          print "#{equipo.marca}".ljust(15)
+          print "#{equipo.modelo}".ljust(15)
+          print "#{equipo.serie}".ljust(15)
+          print "#{equipo.tipo}".ljust(15)
+          print "#{equipo.nivelTinta(equipo.nivel_tinta)}".ljust(15)
+          puts
+        end
+      end
+    else
+      puts "No existen equipos registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaServicios()
+    begin
+      system('cls')
+      puts
+      puts "********** Servicios **********"
+      puts
+      puts "1. Lista de servicios de Reparación"
+      puts "2. Lista de servicios de Mantenimiento"
+      puts "3. Lista de servicios de Instalación"
+      puts "4. <- Regresar"
+      puts
+      puts "Seleccione una opción: "
+      opcion = gets.chomp.to_i
+    end until(opcion >= 1 and opcion <= 4)
+
+    case opcion
+      when 1
+        listaReparacion()
+      when 2
+        listaMantenimiento()
+      when 3
+        listaInstalacion()
+      when 4
+        reportes()
+    end
+  end
+
+  def listaReparacion()
+    costoTotal = 0
+    if @listaServicios.length > 0
+      puts
+      puts "********** Reparación **********"
+      puts
+      print "Código".ljust(15)
+      print "DNI cliente".ljust(15)
+      print "Serie".ljust(15)
+      print "Fecha".ljust(20)
+      print "Rep. de placa".ljust(20)
+      print "Rep. de fuente".ljust(20)
+      print "Costo".ljust(20)
+      print "\n"
+      puts "------------------------------------------------------------------------------------------------------------------------------------------------"
+      @listaServicios.each do |servicio|
+        if servicio.instance_of? Reparacion
+          print "#{servicio.codigo}".ljust(15)
+          print "#{servicio.dni_cliente}".ljust(15)
+          print "#{servicio.serie_equipo}".ljust(15)
+          print "#{servicio.fecha_internamiento}".ljust(20)
+          print "S/ #{servicio.rep_placa}".ljust(20)
+          print "S/ #{servicio.rep_fuente}".ljust(20)
+          print "S/ #{servicio.costoTotal()}".ljust(20)
+          costoTotal += servicio.costoTotal()
+          puts
+        end
+      end
+      puts "------------------------------------------------------------------------------------------------------------------------------------------------"
+      puts "Total Servicio de Reparación: S/ #{costoTotal}"
+    else
+      puts "No existen servicios registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaMantenimiento()
+    costoTotal = 0
+    if @listaServicios.length > 0
+      puts
+      puts "********** Mantenimiento **********"
+      puts
+      print "Código".ljust(15)
+      print "DNI cliente".ljust(15)
+      print "Serie".ljust(15)
+      print "Fecha".ljust(20)
+      print "Mant. preventivo".ljust(20)
+      print "Mant. correctivo".ljust(20)
+      print "Costo".ljust(20)
+      print "\n"
+      puts "------------------------------------------------------------------------------------------------------------------------------------------------"
+      @listaServicios.each do |servicio|
+        if servicio.instance_of? Mantenimiento
+          print "#{servicio.codigo}".ljust(15)
+          print "#{servicio.dni_cliente}".ljust(15)
+          print "#{servicio.serie_equipo}".ljust(15)
+          print "#{servicio.fecha_internamiento}".ljust(20)
+          print "S/ #{servicio.mant_corr}".ljust(20)
+          print "S/ #{servicio.mant_prev}".ljust(20)
+          print "S/ #{servicio.costoTotal()}".ljust(20)
+          costoTotal += servicio.costoTotal()
+          puts
+        end
+      end
+      puts "------------------------------------------------------------------------------------------------------------------------------------------------"
+      puts "Total Servicio de Mantenimiento: S/ #{costoTotal}"
+    else
+      puts "No existen servicios registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def listaInstalacion()
+    costoTotal = 0
+    if @listaServicios.length > 0
+      puts
+      puts "********** Instalación **********"
+      puts
+      print "Código".ljust(15)
+      print "DNI cliente".ljust(15)
+      print "Serie".ljust(15)
+      print "Fecha".ljust(20)
+      print "Inst. SO".ljust(20)
+      print "Inst. programas".ljust(20)
+      print "Inst. tinta".ljust(20)
+      print "Costo".ljust(20)
+      print "\n"
+      puts "--------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+      @listaServicios.each do |servicio|
+        if servicio.instance_of? Mantenimiento
+          print "#{servicio.codigo}".ljust(15)
+          print "#{servicio.dni_cliente}".ljust(15)
+          print "#{servicio.serie_equipo}".ljust(15)
+          print "#{servicio.fecha_internamiento}".ljust(20)
+          print "S/ #{inst_so}".ljust(20)
+          print "S/ #{inst_prog}".ljust(20)
+          print "S/ #{inst_tinta}".ljust(20)
+          print "S/ #{servicio.costoTotal()}".ljust(20)
+          costoTotal += servicio.costoTotal()
+          puts
+        end
+      end
+      puts "--------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+      puts "Total Servicio de Instalación: S/ #{costoTotal}"
+    else
+      puts "No existen equipos registrados."
+    end
+
+    system('pause')
+    reportes()
+  end
+
+  def ganancias()
+    costoTotalReparación = 0
+    costoTotalMantenimiento = 0
+    costoTotalInstalación = 0
+    if @listaServicios.length > 0
+      puts
+      puts "********** Resumen de Ganancias **********"
+      puts
+      print "Servicio".ljust(20)
+      print "Ganancia".ljust(20)
+      puts
+      puts "-------------------------------------------------------"
+      @listaServicios.each do |servicio|
+        if servicio.instance_of? Reparacion
+          costoTotalReparación += servicio.costoTotal()
+        end
+
+        if servicio.instance_of? Mantenimiento
+          costoTotalMantenimiento += servicio.costoTotal()
+        end
+
+        if servicio.instance_of? Instalacion
+          costoTotalInstalación += servicio.costoTotal()
+        end
+      end
+      print "Reparación".ljust(20)
+      print "S/ #{costoTotalReparación}".ljust(20)
+      puts
+      print "Mantenimiento".ljust(20)
+      print "S/ #{costoTotalMantenimiento}".ljust(20)
+      puts
+      print "Instalación".ljust(20)
+      print "S/ #{costoTotalInstalación}".ljust(20)
+      puts
+      puts "-------------------------------------------------------"
+      gananciaTotal = costoTotalReparación + costoTotalMantenimiento + costoTotalInstalación
+      puts "Ganancias totales de Servicios: S/ #{gananciaTotal}"
+    else
+      puts "No existen servicios registrados."
+    end
+
+    system('pause')
+    reportes()
   end
 
 end
-
-# 1. Registrar cliente
-# 2. Registrar equipo
-# 3. Registrar Servicio
-# 4. Mostrar listado de clientes
-# 5. Buscar servicios por dni del cliente: datos del cliente y servicios asociados
-# 6. Ganancias totales de servicios
-# 7. Ganancias totales por tipo de equipo
-# 8. Ganancias totales por tipo de servicio
 
 sis = Sistema.new()
 sis.menuPrincipal()
